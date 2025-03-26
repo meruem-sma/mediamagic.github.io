@@ -1,0 +1,2585 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediaMagic - Resim Dönüştürücü</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
+    <style>
+:root {
+    --primary-color: #6a11cb;
+    --primary-light: #8e2de2;
+    --secondary-color: #1a1a1a;
+    --light-bg: #f8f9fa;
+    --dark-bg: #121212;
+    --text-color: #333;
+    --text-light: #adb5bd;
+    --text-dark: #f8f9fa;
+    --card-bg: #ffffff;
+    --card-bg-dark: #1e1e1e;
+    --border-color: #ddd;
+    --border-color-dark: #444;
+    --footer-bg: #2c2c2c;
+}
+
+body:not(.dark-mode) .converter-card h6,
+body:not(.dark-mode) .format-options h6,
+body:not(.dark-mode) .orientation-options h6 {
+    color: var(--text-color) !important;
+    -webkit-text-fill-color: var(--text-color) !important;
+}
+
+body.dark-mode .converter-card h6,
+body.dark-mode .format-options h6,
+body.dark-mode .orientation-options h6 {
+    color: #f8f9fa !important;
+    -webkit-text-fill-color: #f8f9fa !important;
+    text-shadow: 0 0 0.5px #fff !important;
+}
+
+.format-options h6:not(.keep-original),
+.orientation-options h6:not(.keep-original) {
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+}
+
+body {
+    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-bg);
+    color: var(--text-color);
+    transition: all 0.5s ease;
+    overflow-x: hidden;
+    position: relative;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+body.dark-mode {
+    background-color: var(--dark-bg);
+    color: var(--text-dark);
+}
+
+.main-content {
+    padding-top: 80px;
+    padding-bottom: 100px;
+}
+
+.navbar {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    padding: 15px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;
+}
+
+.dark-mode .navbar {
+    background-color: rgba(30, 30, 30, 0.95);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+}
+
+.navbar.scrolled {
+    padding: 10px 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    color: var(--primary-color) !important;
+    font-size: 1.8rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand span {
+    color: var(--secondary-color);
+}
+
+.dark-mode .navbar-brand span {
+    color: var(--text-dark);
+}
+
+.nav-link {
+    color: var(--secondary-color) !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    margin: 0 12px;
+    font-size: 0.95rem;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+.dark-mode .nav-link {
+    color: var(--text-dark) !important;
+}
+
+.nav-link:hover {
+    color: var(--primary-color) !important;
+    transform: translateY(-2px);
+}
+
+.nav-link.active {
+    color: var(--primary-color) !important;
+    font-weight: 600;
+}
+
+.language-selector {
+    position: relative;
+    margin-left: 15px;
+}
+
+.language-btn {
+    background: rgba(106, 17, 203, 0.1);
+    border: none;
+    padding: 8px 15px;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--secondary-color);
+    font-weight: 500;
+}
+
+.dark-mode .language-btn {
+    color: var(--text-dark);
+    background: rgba(106, 17, 203, 0.2);
+}
+
+.language-btn:hover {
+    background: rgba(106, 17, 203, 0.2);
+    transform: translateY(-2px);
+}
+
+.dark-mode .language-btn:hover {
+    background: rgba(106, 17, 203, 0.3);
+}
+
+.language-btn i {
+    margin-right: 8px;
+    font-size: 1rem;
+}
+
+.language-dropdown {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: var(--card-bg);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    min-width: 180px;
+    z-index: 1000;
+    display: none;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    transform: translateY(10px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.dark-mode .language-dropdown {
+    background: var(--card-bg-dark);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border-color: var(--border-color-dark);
+}
+
+.language-dropdown.show {
+    display: block;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.language-option {
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dark-mode .language-option {
+    color: var(--text-dark);
+    border-bottom-color: var(--border-color-dark);
+}
+
+.language-option:last-child {
+    border-bottom: none;
+}
+
+.language-option:hover {
+    background: rgba(106, 17, 203, 0.1);
+    transform: translateX(5px);
+}
+
+.dark-mode .language-option:hover {
+    background: rgba(106, 17, 203, 0.2);
+}
+
+.language-option .flag-icon {
+    margin-right: 10px;
+    font-size: 1.2rem;
+    min-width: 20px;
+    text-align: center;
+}
+
+.language-option .language-name {
+    flex-grow: 1;
+}
+
+.language-option .language-code {
+    color: var(--text-light);
+    font-size: 0.8rem;
+    margin-left: 10px;
+}
+
+.dark-mode .language-option .language-code {
+    color: var(--text-dark);
+}
+
+.main-title {
+    text-align: center;
+    margin: 0;
+    padding: 0 0 20px;
+    position: relative;
+}
+
+.main-title h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 15px;
+}
+
+.main-title p {
+    color: var(--text-light);
+    font-size: 1.1rem;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.dark-mode .main-title p {
+    color: var(--text-dark);
+}
+
+.converter-card {
+    background-color: var(--card-bg);
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    margin-bottom: 40px;
+    overflow: hidden;
+    position: relative;
+}
+
+.converter-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.dark-mode .converter-card {
+    background-color: var(--card-bg-dark);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .converter-card:hover {
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+}
+
+.card-text {
+    color: var(--text-color);
+}
+
+.dark-mode .card-text,
+.dark-mode .card-title {
+    color: var(--text-dark) !important;
+}
+
+.drop-zone {
+    border: 2px dashed var(--border-color);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    background-color: rgba(106, 17, 203, 0.03);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.drop-zone::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(106,17,203,0.1) 0%, rgba(0,0,0,0) 70%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.drop-zone:hover::before {
+    opacity: 1;
+}
+
+.drop-zone--over {
+    border-color: var(--primary-color);
+    background-color: rgba(106, 17, 203, 0.05);
+    transform: scale(1.02);
+}
+
+.drop-zone--over .drop-zone__prompt {
+    color: var(--primary-color);
+}
+
+.dark-mode .drop-zone {
+    background-color: rgba(106, 17, 203, 0.05);
+    border-color: var(--border-color-dark);
+    color: var(--text-dark);
+}
+
+.drop-zone:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 8px 25px rgba(106, 17, 203, 0.1);
+}
+
+.drop-zone__prompt {
+    color: var(--text-light);
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.dark-mode .drop-zone__prompt {
+    color: var(--text-dark);
+}
+
+.drop-zone__thumb {
+    width: 100%;
+    height: 250px;
+    border-radius: 15px;
+    overflow: hidden;
+    background-color: #f1f1f1;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    margin-top: 15px;
+    display: none;
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    opacity: 0;
+    transform: translateY(20px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.drop-zone__thumb.show {
+    opacity: 1;
+    transform: translateY(0);
+    display: block;
+}
+
+.drop-zone__input {
+    display: none;
+}
+
+.format-options, .orientation-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.format-option, .orientation-option {
+    padding: 10px 20px;
+    border-radius: 25px;
+    background-color: #f1f1f1;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    font-size: 0.9rem;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    color: var(--text-color);
+}
+
+.format-option:hover, .orientation-option:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.format-option.active, .orientation-option.active {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+}
+
+.dark-mode .format-option, 
+.dark-mode .orientation-option {
+    background-color: #2a2a2a;
+    border-color: #444;
+    color: var(--text-dark);
+}
+
+.dark-mode .format-option.active, 
+.dark-mode .orientation-option.active {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    border-color: var(--primary-color);
+}
+
+.btn-convert {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    border: none;
+    padding: 14px 45px;
+    font-weight: 600;
+    border-radius: 30px;
+    color: white;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+    margin: 20px 0;
+    box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+    letter-spacing: 0.5px;
+}
+
+.btn-convert:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(106, 17, 203, 0.4);
+}
+
+.btn-convert:active {
+    transform: translateY(-1px);
+}
+
+.btn-convert::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: 0.5s;
+}
+
+.btn-convert:hover::before {
+    left: 100%;
+}
+
+.progress {
+    height: 30px;
+    border-radius: 15px;
+    margin: 25px 0;
+    display: none;
+    position: relative;
+    background: linear-gradient(90deg, #e9ecef 0%, #f8f9fa 100%);
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.dark-mode .progress {
+    background: linear-gradient(90deg, #2a2a2a 0%, #1e1e1e 100%);
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    height: 100%;
+    transition: width 0.6s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.15) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0.15) 75%,
+        transparent 75%,
+        transparent
+    );
+    background-size: 40px 40px;
+    animation: progress-bar-stripes 2s linear infinite;
+}
+
+@keyframes progress-bar-stripes {
+    from {
+        background-position: 0% 50%;
+    }
+    to {
+        background-position: 100% 50%;
+    }
+}
+
+.progress-text {
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    line-height: 30px;
+    color: white;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+section {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    margin-bottom: 80px;
+}
+
+section.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.section-title {
+    margin-bottom: 40px;
+    position: relative;
+    padding-bottom: 15px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 2.2rem;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    width: 100%;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    border-radius: 3px;
+}
+
+.dark-mode-toggle {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 25px rgba(106, 17, 203, 0.4);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    z-index: 1000;
+}
+
+.dark-mode-toggle:hover {
+    transform: scale(1.1) rotate(30deg);
+    box-shadow: 0 8px 30px rgba(106, 17, 203, 0.6);
+}
+
+.dark-mode-toggle:active {
+    transform: scale(0.95);
+}
+
+.dark-mode-toggle i {
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.feature-card {
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transform: perspective(1000px) rotateX(0deg);
+    background-color: var(--card-bg);
+    border-radius: 20px;
+    padding: 30px;
+    height: 100%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.feature-card:hover {
+    transform: perspective(1000px) rotateX(5deg) translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.dark-mode .feature-card {
+    background-color: var(--card-bg-dark);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255,255,255,0.05);
+}
+
+.dark-mode .feature-card:hover {
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1);
+}
+
+.feature-card h3 {
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+}
+
+.dark-mode .feature-card h3 {
+    color: var(--primary-light);
+}
+
+.accordion-item {
+    margin-bottom: 20px;
+    border-radius: 15px !important;
+    overflow: hidden;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+.dark-mode .accordion-item {
+    background-color: var(--card-bg-dark);
+    border-color: var(--border-color-dark);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.accordion-button {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    font-weight: 500;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.dark-mode .accordion-button {
+    background-color: var(--card-bg-dark);
+    color: var(--text-dark);
+}
+
+.accordion-button:not(.collapsed) {
+    color: var(--primary-color);
+    background-color: rgba(106, 17, 203, 0.05);
+    box-shadow: none;
+}
+
+.dark-mode .accordion-button:not(.collapsed) {
+    background-color: rgba(106, 17, 203, 0.1);
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.25rem rgba(106, 17, 203, 0.25);
+}
+
+.accordion-body {
+    transition: all 0.3s ease;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    padding: 20px;
+}
+
+.dark-mode .accordion-body {
+    background-color: var(--card-bg-dark);
+    color: var(--text-dark);
+}
+
+.output-section {
+    animation: fadeInUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    display: none;
+    margin-top: 40px;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.output-preview {
+    max-width: 100%;
+    height: auto;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.output-preview:hover {
+    transform: scale(1.02);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.dark-mode .output-preview {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.output-section h5,
+.output-section strong,
+.output-section span {
+    color: var(--text-color);
+}
+
+.dark-mode .output-section h5,
+.dark-mode .output-section strong,
+.dark-mode .output-section span {
+    color: var(--text-dark) !important;
+}
+
+.super-footer {
+    background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+    color: white;
+    padding: 30px 0 10px;
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid rgba(106, 17, 203, 0.3);
+    margin-top: 40px;
+}
+
+.super-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #6a11cb, #8e2de2, #6a11cb);
+    background-size: 200% 100%;
+    animation: gradientFlow 3s linear infinite;
+}
+
+@keyframes gradientFlow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.footer-column h5 {
+    color: #8e2de2;
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    position: relative;
+    padding-bottom: 5px;
+}
+
+.footer-column h5::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 30px;
+    height: 1px;
+    background: linear-gradient(90deg, #6a11cb, #8e2de2);
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.footer-links li:hover {
+    transform: translateX(5px);
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: white;
+    text-shadow: 0 0 5px rgba(142, 45, 226, 0.5);
+}
+
+.footer-links a::before {
+    content: '➤';
+    margin-right: 5px;
+    color: #6a11cb;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.footer-links a:hover::before {
+    opacity: 1;
+}
+
+.contact-info li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.contact-info i {
+    font-size: 1rem;
+    margin-right: 8px;
+    color: #8e2de2;
+    transition: all 0.3s ease;
+}
+
+.contact-info a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.contact-info a:hover {
+    color: white;
+    text-shadow: 0 0 5px rgba(142, 45, 226, 0.5);
+}
+
+.contact-info a:hover i {
+    transform: scale(1.1);
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.social-hub {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.social-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.social-icon:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
+}
+
+.social-icon::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #6a11cb, #8e2de2);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover::after {
+    opacity: 1;
+}
+
+.social-icon i {
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover i {
+    transform: scale(1.1);
+}
+
+.company-info {
+    margin-bottom: 10px;
+}
+
+.rk-signature {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+.developer-name {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 3px 0 0;
+}
+
+.copyright {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+.copyright::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, #6a11cb, #8e2de2);
+}
+
+@keyframes floatAndGlow {
+    0%, 100% { 
+        transform: translateY(0);
+        box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+    }
+    50% { 
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(106, 17, 203, 0.6);
+    }
+}
+
+.magic-hover {
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.magic-hover:hover {
+    animation: floatAndGlow 3s ease-in-out infinite;
+}
+
+.particle {
+    position: absolute;
+    background: rgba(106, 17, 203, 0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) translateX(0);
+    }
+    25% {
+        transform: translateY(-20px) translateX(10px);
+    }
+    50% {
+        transform: translateY(-10px) translateX(20px);
+    }
+    75% {
+        transform: translateY(-30px) translateX(-10px);
+    }
+}
+
+.watermark {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    opacity: 0.1;
+    font-size: 8px;
+    color: var(--primary-color);
+    z-index: -1;
+    user-select: none;
+}
+
+@media (max-width: 992px) {
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .feature-card {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.5rem;
+    }
+    
+    .btn-convert {
+        padding: 12px 35px;
+    }
+    
+    .format-option, .orientation-option {
+        flex: 1 1 calc(50% - 10px);
+        font-size: 0.8rem;
+        padding: 8px 15px;
+    }
+    
+    .drop-zone {
+        padding: 25px;
+    }
+    
+    .section-title {
+        font-size: 1.6rem;
+    }
+    
+    .super-footer {
+        padding: 20px 0 10px;
+    }
+    
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .footer-column h5 {
+        margin-bottom: 8px;
+    }
+    
+    .social-hub {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 576px) {
+    .nav-link {
+        margin: 0 8px;
+        font-size: 0.9rem;
+    }
+    
+    .drop-zone__prompt {
+        font-size: 1rem;
+    }
+    
+    .output-section .col-md-6 {
+        margin-bottom: 20px;
+    }
+    
+    .section-title {
+        font-size: 1.4rem;
+    }
+
+    .language-selector {
+        margin-left: 8px;
+    }
+
+    .language-btn span {
+        display: none;
+    }
+}
+    </style>
+</head>
+<body>
+    <!-- Floating Elements -->
+    <div class="floating-element" style="width: 300px; height: 300px; top: -100px; left: -100px; background: radial-gradient(circle, rgba(106,17,203,0.1) 0%, rgba(0,0,0,0) 70%);"></div>
+    <div class="floating-element" style="width: 200px; height: 200px; bottom: -50px; right: -50px; background: radial-gradient(circle, rgba(106,17,203,0.1) 0%, rgba(0,0,0,0) 70%);"></div>
+
+    <!-- Watermark (Hidden RK Studio Signature) -->
+    <div class="watermark">RKSTUDIO_RIZAKAYA_MEDIA_MAGIC_V2.0</div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand animate__animated animate__fadeIn" href="#">
+                Media<span>Magic</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#converter" data-translate="nav.converter">Dönüştürücü</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features" data-translate="nav.features">Özellikler</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#faq" data-translate="nav.faq">SSS</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#privacy" data-translate="nav.privacy">Gizlilik</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#terms" data-translate="nav.terms">Koşullar</a>
+                    </li>
+                    <li class="nav-item language-selector">
+                        <button class="language-btn">
+                            <i class="flag-icon flag-icon-tr"></i>
+                            <span data-translate="language.current">Türkçe</span>
+                        </button>
+                        <div class="language-dropdown">
+                            <div class="language-option" data-lang="tr">
+                                <span class="flag-icon flag-icon-tr"></span>
+                                <span class="language-name" data-translate="language.tr">Türkçe</span>
+                                <span class="language-code">TR</span>
+                            </div>
+                            <div class="language-option" data-lang="en">
+                                <span class="flag-icon flag-icon-us"></span>
+                                <span class="language-name" data-translate="language.en">English</span>
+                                <span class="language-code">EN</span>
+                            </div>
+                            <div class="language-option" data-lang="de">
+                                <span class="flag-icon flag-icon-de"></span>
+                                <span class="language-name" data-translate="language.de">Deutsch</span>
+                                <span class="language-code">DE</span>
+                            </div>
+                            <div class="language-option" data-lang="fr">
+                                <span class="flag-icon flag-icon-fr"></span>
+                                <span class="language-name" data-translate="language.fr">Français</span>
+                                <span class="language-code">FR</span>
+                            </div>
+                            <div class="language-option" data-lang="es">
+                                <span class="flag-icon flag-icon-es"></span>
+                                <span class="language-name" data-translate="language.es">Español</span>
+                                <span class="language-code">ES</span>
+                            </div>
+                            <div class="language-option" data-lang="ru">
+                                <span class="flag-icon flag-icon-ru"></span>
+                                <span class="language-name" data-translate="language.ru">Русский</span>
+                                <span class="language-code">RU</span>
+                            </div>
+                            <div class="language-option" data-lang="ja">
+                                <span class="flag-icon flag-icon-jp"></span>
+                                <span class="language-name" data-translate="language.ja">日本語</span>
+                                <span class="language-code">JA</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Ana Başlık - Navbar'a yapışık -->
+    <div class="main-title animate__animated animate__fadeIn">
+        <h1 data-translate="title">Resim Dosyalarınızı Dönüştürün</h1>
+        <p data-translate="subtitle">PNG, JPG, WEBP ve daha fazla format arasında kolayca dönüşüm yapın</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container my-5 pt-4 main-content">
+        <!-- Converter Section -->
+        <section id="converter" class="mb-5 animate__animated">
+            <div class="card converter-card animate__animated animate__fadeInUp">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3" data-translate="converter.title">Resim Dönüştürücü</h5>
+                    <p class="card-text mb-4" data-translate="converter.text">PNG, JPG, WEBP, GIF, BMP, ICO, TIFF, SVG, HEIC, PDF ve daha fazla format arasında dönüşüm yapın.</p>
+                    
+                    <!-- Format Options -->
+                    <h6 data-translate="converter.targetFormat">Hedef Format</h6>
+                    <div class="format-options mb-4">
+                        <div class="format-option active" data-format="jpg" data-translate="formats.jpg">JPG</div>
+                        <div class="format-option" data-format="png" data-translate="formats.png">PNG</div>
+                        <div class="format-option" data-format="webp" data-translate="formats.webp">WEBP</div>
+                        <div class="format-option" data-format="gif" data-translate="formats.gif">GIF</div>
+                        <div class="format-option" data-format="bmp" data-translate="formats.bmp">BMP</div>
+                        <div class="format-option" data-format="ico" data-translate="formats.ico">ICO</div>
+                        <div class="format-option" data-format="tiff" data-translate="formats.tiff">TIFF</div>
+                        <div class="format-option" data-format="svg" data-translate="formats.svg">SVG</div>
+                        <div class="format-option" data-format="heic" data-translate="formats.heic">HEIC</div>
+                        <div class="format-option" data-format="pdf" data-translate="formats.pdf">PDF</div>
+                    </div>
+                    
+                    <!-- Orientation Options -->
+                    <h6 data-translate="converter.orientation">Yönlendirme</h6>
+                    <div class="orientation-options mb-4">
+                        <div class="orientation-option active" data-orientation="portrait" data-translate="orientation.portrait">Dikey</div>
+                        <div class="orientation-option" data-orientation="landscape" data-translate="orientation.landscape">Yatay</div>
+                    </div>
+                    
+                    <!-- Drop Zone -->
+                    <div class="drop-zone" id="imageDropZone">
+                        <span class="drop-zone__prompt" data-translate="dropzone.prompt">
+                            <i class="fas fa-cloud-upload-alt fa-3x mb-3 animate-float"></i><br>
+                            Resim dosyanızı buraya sürükleyin veya tıklayın
+                        </span>
+                        <div class="drop-zone__thumb" data-label=""></div>
+                        <input type="file" name="imageFile" class="drop-zone__input" accept="image/*">
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="progress mt-4" id="imageProgress">
+                        <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-text" data-translate="progress.loading">Yükleniyor...</div>
+                    </div>
+                    
+                    <!-- Convert Button -->
+                    <div class="text-center mt-4">
+                        <button class="btn btn-convert animate-pulse" id="convertImageBtn" data-translate="button.convert">Dönüştür</button>
+                    </div>
+                    
+                    <!-- Output Section -->
+                    <div class="output-section" id="imageOutputSection">
+                        <h5 class="mt-0 mb-3" data-translate="output.result">Sonuç</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="" class="output-preview" id="imageOutputPreview" alt="Dönüştürülmüş resim">
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h6 data-translate="output.fileInfo">Dosya Bilgileri</h6>
+                                        <ul class="list-unstyled">
+                                            <li><strong data-translate="output.fileName">Dosya Adı:</strong> <span id="imageOutputName"></span></li>
+                                            <li><strong data-translate="output.size">Boyut:</strong> <span id="imageOutputSize"></span></li>
+                                            <li><strong data-translate="output.format">Format:</strong> <span id="imageOutputFormat"></span></li>
+                                            <li><strong data-translate="output.dimensions">Boyutlar:</strong> <span id="imageOutputDimensions"></span></li>
+                                        </ul>
+                                        <div class="d-grid gap-2 mt-3">
+                                            <button class="btn btn-success" id="downloadImageBtn">
+                                                <i class="fas fa-download me-2"></i> <span data-translate="button.download">İndir</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features-section mb-5">
+            <h2 class="section-title animate__animated animate__fadeIn" data-translate="sections.features">Özellikler</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4 animate__animated" data-animate="animate__fadeInUp">
+                    <div class="feature-card p-4 rounded">
+                        <div class="feature-icon text-center">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <h3 class="text-center" data-translate="features.title1">Çoklu Format Desteği</h3>
+                        <p class="text-center" data-translate="features.text1">10'dan fazla görsel format arasında kolayca dönüşüm yapabilirsiniz. JPG, PNG, WEBP, GIF ve daha fazlası.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 animate__animated" data-animate="animate__fadeInUp" data-animate-delay="0.2s">
+                    <div class="feature-card p-4 rounded">
+                        <div class="feature-icon text-center">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h3 class="text-center" data-translate="features.title2">Güvenli Dönüşüm</h3>
+                        <p class="text-center" data-translate="features.text2">Tüm işlemler tarayıcınızda gerçekleşir. Dosyalarınız sunuculara yüklenmez, gizliliğiniz korunur.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 animate__animated" data-animate="animate__fadeInUp" data-animate-delay="0.4s">
+                    <div class="feature-card p-4 rounded">
+                        <div class="feature-icon text-center">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <h3 class="text-center" data-translate="features.title3">Hızlı İşlem</h3>
+                        <p class="text-center" data-translate="features.text3">Güçlü algoritmalar sayesinde dönüşüm işlemleri saniyeler içinde tamamlanır.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 animate__animated" data-animate="animate__fadeInUp">
+                    <div class="feature-card p-4 rounded">
+                        <div class="feature-icon text-center">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3 class="text-center" data-translate="features.title4">Mobil Uyumlu</h3>
+                        <p class="text-center" data-translate="features.text4">Tüm cihazlarda sorunsuz çalışır. Telefonunuzdan bile kolayca dönüşüm yapabilirsiniz.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 animate__animated" data-animate="animate__fadeInUp" data-animate-delay="0.2s">
+                    <div class="feature-card p-4 rounded">
+                        <div class="feature-icon text-center">
+                            <i class="fas fa-moon"></i>
+                        </div>
+                        <h3 class="text-center" data-translate="features.title5">Karanlık Mod</h3>
+                        <p class="text-center" data-translate="features.text5">Gözlerinizi yormayan karanlık mod desteği ile gece çalışmalarınızda rahat edin.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 animate__animated" data-animate="animate__fadeInUp" data-animate-delay="0.4s">
+                    <div class="feature-card p-4 rounded">
+                        <div class="feature-icon text-center">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        <h3 class="text-center" data-translate="features.title6">Yönlendirme Seçenekleri</h3>
+                        <p class="text-center" data-translate="features.text6">Görsellerinizi dikey veya yatay olarak dönüştürebilir, istediğiniz yönlendirmeyi seçebilirsiniz.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="faq-section mb-5">
+            <h2 class="section-title animate__animated animate__fadeIn" data-translate="sections.faq">Sık Sorulan Sorular</h2>
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item mb-3 animate__animated" data-animate="animate__fadeInUp">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                            <i class="fas fa-question-circle me-2"></i> <span data-translate="faq.question1">Dönüştürme işlemi ne kadar sürer?</span>
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body" data-translate="faq.answer1">
+                            Dönüştürme işlemi dosya boyutuna ve tipine bağlı olarak değişir, ancak çoğu dönüşüm işlemi birkaç saniye içinde tamamlanır.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item mb-3 animate__animated" data-animate="animate__fadeInUp" data-animate-delay="0.1s">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            <i class="fas fa-shield-alt me-2"></i> <span data-translate="faq.question2">Dosyalarım güvende mi?</span>
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body" data-translate="faq.answer2">
+                            Evet, tüm işlemler tarayıcınızda gerçekleşir ve dosyalarınız sunucularımıza yüklenmez. İşlem tamamlandıktan sonra herhangi bir veri saklanmaz.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item mb-3 animate__animated" data-animate="animate__fadeInUp" data-animate-delay="0.2s">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            <i class="fas fa-layer-group me-2"></i> <span data-translate="faq.question3">Kaç dosyayı aynı anda dönüştürebilirim?</span>
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body" data-translate="faq.answer3">
+                            Şu anda tek bir dosyayı dönüştürebilirsiniz. Yakında toplu dönüştürme özelliği eklenecektir.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item mb-3 animate__animated" data-animate="animate__fadeInUp" data-animate-delay="0.3s">
+                    <h2 class="accordion-header" id="headingFour">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                            <i class="fas fa-globe me-2"></i> <span data-translate="faq.question4">Hangi tarayıcılar destekleniyor?</span>
+                        </button>
+                    </h2>
+                    <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body" data-translate="faq.answer4">
+                            MediaMagic, Chrome, Firefox, Edge, Safari ve Opera'nın son sürümlerinde sorunsuz çalışmaktadır. İnternet Explorer desteklenmemektedir.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item mb-3 animate__animated" data-animate="animate__fadeInUp" data-animate-delay="0.4s">
+                    <h2 class="accordion-header" id="headingFive">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                            <i class="fas fa-star me-2"></i> <span data-translate="faq.question5">Dönüştürme kalitesi nasıl?</span>
+                        </button>
+                    </h2>
+                    <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body" data-translate="faq.answer5">
+                            Dönüştürme işlemlerinde en yüksek kaliteyi sağlamak için optimize edilmiş algoritmalar kullanıyoruz. Özellikle JPG ve PNG dönüşümlerinde kalite kaybı minimum seviyededir.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Privacy Policy Section -->
+        <section id="privacy" class="privacy-section mb-5 p-4 rounded animate__animated" data-animate="animate__fadeIn">
+            <h2 class="section-title" data-translate="sections.privacy">Gizlilik Politikası</h2>
+            <div class="privacy-content">
+                <div class="mb-4">
+                    <h4><i class="fas fa-user-shield me-2"></i> <span data-translate="privacy.title1">1. Gizlilik</span></h4>
+                    <p data-translate="privacy.text1">MediaMagic olarak kullanıcı gizliliğinize büyük önem veriyoruz. Tüm dönüştürme işlemleri tarayıcınızda gerçekleşir ve hiçbir dosya sunucularımıza yüklenmez.</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h4><i class="fas fa-database me-2"></i> <span data-translate="privacy.title2">2. Veri Toplama</span></h4>
+                    <p data-translate="privacy.text2">Uygulamamız herhangi bir kişisel verinizi toplamaz, saklamaz veya paylaşmaz. Kullanıcı deneyimini iyileştirmek amacıyla anonim kullanım istatistikleri toplayabiliriz.</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h4><i class="fas fa-cookie me-2"></i> <span data-translate="privacy.title3">3. Çerezler</span></h4>
+                    <p data-translate="privacy.text3">Web sitemiz, kullanıcı tercihlerini (örneğin karanlık mod seçimi) hatırlamak için sadece gerekli çerezleri kullanır. Bu çerezler kişisel veri içermez.</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h4><i class="fas fa-building me-2"></i> <span data-translate="privacy.title4">4. Üçüncü Parti Hizmetler</span></h4>
+                    <p data-translate="privacy.text4">MediaMagic, reklam veya analiz amaçlı herhangi bir üçüncü parti hizmet kullanmamaktadır. Tüm işlemler tamamen yerel olarak gerçekleşir.</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h4><i class="fas fa-calendar-alt me-2"></i> <span data-translate="privacy.title5">5. Değişiklikler</span></h4>
+                    <p data-translate="privacy.text5">Gizlilik politikamızda yapılacak değişiklikler bu sayfada yayınlanacaktır. Son güncelleme tarihi: 25/03/2025</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Terms of Service Section -->
+        <section id="terms" class="terms-section mb-5 p-4 rounded animate__animated" data-animate="animate__fadeIn">
+            <h2 class="section-title" data-translate="sections.terms">Kullanım Koşulları</h2>
+            <div class="terms-content">
+                <div class="mb-4">
+                    <h4><i class="fas fa-laptop-code me-2"></i> <span data-translate="terms.title1">1. Hizmet Kullanımı</span></h4>
+                    <p data-translate="terms.text1">MediaMagic ücretsiz bir hizmettir ve kişisel kullanım için sunulmaktadır. Ticari kullanım için lütfen bizimle iletişime geçin.</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h4><i class="fas fa-gavel me-2"></i> <span data-translate="terms.title2">2. Sorumluluk</span></h4>
+                    <p data-translate="terms.text2">MediaMagic, dönüştürülen dosyaların içeriğinden veya kullanımından sorumlu değildir. Kullanıcılar yasalara uygun içerikler yüklemekle yükümlüdür.</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h4><i class="fas fa-exclamation-triangle me-2"></i> <span data-translate="terms.title3">3. Hizmet Kesintileri</span></h4>
+                    <p data-translate="terms.text3">MediaMagic, bakım veya teknik sorunlar nedeniyle hizmette kesintiler yaşanabileceğini bildirir. Bu tür durumlarda önceden haber verme zorunluluğumuz yoktur.</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h4><i class="fas fa-copyright me-2"></i> <span data-translate="terms.title4">4. Fikri Mülkiyet</span></h4>
+                    <p data-translate="terms.text4">MediaMagic web arayüzü ve tüm içerikler RK Studio'ya aittir. İzinsiz kopyalama, dağıtım veya kullanım yasaktır.</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h4><i class="fas fa-calendar-alt me-2"></i> <span data-translate="terms.title5">5. Değişiklikler</span></h4>
+                    <p data-translate="terms.text5">Kullanım koşullarımız zaman zaman güncellenebilir. Değişiklikler yürürlüğe girdikleri tarihten itibaren geçerlidir. Son güncelleme tarihi: 25/03/2025</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Super Footer -->
+<footer class="super-footer">
+    <div class="container">
+        <!-- Footer Üst Kısım: Grid Yapısı -->
+        <div class="footer-grid">
+            <!-- Hakkımızda Kısmı -->
+            <div class="footer-column">
+                <h5 data-translate="footer.about">Hakkımızda</h5>
+                <p data-translate="footer.about.text">Profesyonel medya dönüştürme araçlarıyla işlerinizi kolaylaştırıyoruz.</p>
+            </div>
+            <!-- Hızlı Bağlantılar -->
+            <div class="footer-column">
+                <h5 data-translate="footer.links">Hızlı Bağlantılar</h5>
+                <ul class="footer-links">
+                    <li><a href="#converter" data-translate="nav.converter">Dönüştürücü</a></li>
+                    <li><a href="#features" data-translate="nav.features">Özellikler</a></li>
+                    <li><a href="#faq" data-translate="nav.faq">SSS</a></li>
+                    <li><a href="#privacy" data-translate="nav.privacy">Gizlilik</a></li>
+                    <li><a href="#terms" data-translate="nav.terms">Koşullar</a></li>
+                </ul>
+            </div>
+            <!-- İletişim Bilgileri -->
+            <div class="footer-column">
+                <h5 data-translate="footer.contact">İletişim</h5>
+                <ul class="footer-links contact-info">
+                    <li>
+                        <i class="fas fa-envelope me-2"></i>
+                        <a href="mailto:rizakaya739@gmail.com">rizakaya739@gmail.com</a>
+                    </li>
+                    <li>
+                        <a href="https://www.instagram.com/riza_.kaya/" target="_blank" class="social-link">
+                            <i class="fab fa-instagram me-2"></i> @riza_.kaya
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Sosyal Medya ve İmza Alanı -->
+        <div class="footer-bottom">
+            <div class="social-hub">
+                <a href="https://www.instagram.com/riza_.kaya/" target="_blank" class="social-icon" title="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+            <div class="company-info">
+                <p class="rk-signature">RK Studio</p>
+                <p class="developer-name">Designed & Developed by Rıza Kaya</p>
+            </div>
+            <div class="copyright" data-translate="footer.rights">© 2025 MediaMagic. Tüm hakları saklıdır.</div>
+        </div>
+    </div>
+</footer>
+
+    <!-- Dark Mode Toggle -->
+    <button class="dark-mode-toggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    // Dark Mode Toggle
+    const darkModeToggle = document.querySelector('.dark-mode-toggle');
+    const body = document.body;
+    
+    darkModeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        const isDarkMode = body.classList.contains('dark-mode');
+        darkModeToggle.innerHTML = `<i class="fas fa-${isDarkMode ? 'sun' : 'moon'}"></i>`;
+        localStorage.setItem('darkMode', isDarkMode);
+        
+        // Toggle animation
+        darkModeToggle.style.transform = 'scale(0.9)';
+        setTimeout(() => {
+            darkModeToggle.style.transform = 'scale(1)';
+        }, 100);
+    });
+
+    // Load dark mode preference
+    if (localStorage.getItem('darkMode') === 'true') {
+        body.classList.add('dark-mode');
+        darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    }
+
+    // Çeviriler - Tüm diller eklendi
+    const translations = {
+        'tr': {
+            'title': 'Resim Dosyalarınızı Dönüştürün',
+            'subtitle': 'PNG, JPG, WEBP ve daha fazla format arasında kolayca dönüşüm yapın',
+            'nav.converter': 'Dönüştürücü',
+            'nav.features': 'Özellikler',
+            'nav.faq': 'SSS',
+            'nav.privacy': 'Gizlilik',
+            'nav.terms': 'Koşullar',
+            'converter.title': 'Resim Dönüştürücü',
+            'converter.text': 'PNG, JPG, WEBP, GIF, BMP, ICO, TIFF, SVG, HEIC, PDF ve daha fazla format arasında dönüşüm yapın.',
+            'converter.targetFormat': 'Hedef Format',
+            'converter.orientation': 'Yönlendirme',
+            'formats.jpg': 'JPG',
+            'formats.png': 'PNG',
+            'formats.webp': 'WEBP',
+            'formats.gif': 'GIF',
+            'formats.bmp': 'BMP',
+            'formats.ico': 'ICO',
+            'formats.tiff': 'TIFF',
+            'formats.svg': 'SVG',
+            'formats.heic': 'HEIC',
+            'formats.pdf': 'PDF',
+            'orientation.portrait': 'Dikey',
+            'orientation.landscape': 'Yatay',
+            'dropzone.prompt': 'Resim dosyanızı buraya sürükleyin veya tıklayın',
+            'button.convert': 'Dönüştür',
+            'progress.loading': 'Yükleniyor...',
+            'progress.converting': 'Dönüştürülüyor...',
+            'output.result': 'Sonuç',
+            'output.fileInfo': 'Dosya Bilgileri',
+            'output.fileName': 'Dosya Adı',
+            'output.size': 'Boyut',
+            'output.format': 'Format',
+            'output.dimensions': 'Boyutlar',
+            'button.download': 'İndir',
+            'sections.features': 'Özellikler',
+            'features.title1': 'Çoklu Format Desteği',
+            'features.text1': '10\'dan fazla görsel format arasında kolayca dönüşüm yapabilirsiniz. JPG, PNG, WEBP, GIF ve daha fazlası.',
+            'features.title2': 'Güvenli Dönüşüm',
+            'features.text2': 'Tüm işlemler tarayıcınızda gerçekleşir. Dosyalarınız sunuculara yüklenmez, gizliliğiniz korunur.',
+            'features.title3': 'Hızlı İşlem',
+            'features.text3': 'Güçlü algoritmalar sayesinde dönüşüm işlemleri saniyeler içinde tamamlanır.',
+            'features.title4': 'Mobil Uyumlu',
+            'features.text4': 'Tüm cihazlarda sorunsuz çalışır. Telefonunuzdan bile kolayca dönüşüm yapabilirsiniz.',
+            'features.title5': 'Karanlık Mod',
+            'features.text5': 'Gözlerinizi yormayan karanlık mod desteği ile gece çalışmalarınızda rahat edin.',
+            'features.title6': 'Yönlendirme Seçenekleri',
+            'features.text6': 'Görsellerinizi dikey veya yatay olarak dönüştürebilir, istediğiniz yönlendirmeyi seçebilirsiniz.',
+            'sections.faq': 'Sık Sorulan Sorular',
+            'faq.question1': 'Dönüştürme işlemi ne kadar sürer?',
+            'faq.answer1': 'Dönüştürme işlemi dosya boyutuna ve tipine bağlı olarak değişir, ancak çoğu dönüşüm işlemi birkaç saniye içinde tamamlanır.',
+            'faq.question2': 'Dosyalarım güvende mi?',
+            'faq.answer2': 'Evet, tüm işlemler tarayıcınızda gerçekleşir ve dosyalarınız sunucularımıza yüklenmez. İşlem tamamlandıktan sonra herhangi bir veri saklanmaz.',
+            'faq.question3': 'Kaç dosyayı aynı anda dönüştürebilirim?',
+            'faq.answer3': 'Şu anda tek bir dosyayı dönüştürebilirsiniz. Yakında toplu dönüştürme özelliği eklenecektir.',
+            'faq.question4': 'Hangi tarayıcılar destekleniyor?',
+            'faq.answer4': 'MediaMagic, Chrome, Firefox, Edge, Safari ve Opera\'nın son sürümlerinde sorunsuz çalışmaktadır. İnternet Explorer desteklenmemektedir.',
+            'faq.question5': 'Dönüştürme kalitesi nasıl?',
+            'faq.answer5': 'Dönüştürme işlemlerinde en yüksek kaliteyi sağlamak için optimize edilmiş algoritmalar kullanıyoruz. Özellikle JPG ve PNG dönüşümlerinde kalite kaybı minimum seviyededir.',
+            'sections.privacy': 'Gizlilik Politikası',
+            'privacy.title1': '1. Gizlilik',
+            'privacy.text1': 'MediaMagic olarak kullanıcı gizliliğinize büyük önem veriyoruz. Tüm dönüştürme işlemleri tarayıcınızda gerçekleşir ve hiçbir dosya sunucularımıza yüklenmez.',
+            'privacy.title2': '2. Veri Toplama',
+            'privacy.text2': 'Uygulamamız herhangi bir kişisel verinizi toplamaz, saklamaz veya paylaşmaz. Kullanıcı deneyimini iyileştirmek amacıyla anonim kullanım istatistikleri toplayabiliriz.',
+            'privacy.title3': '3. Çerezler',
+            'privacy.text3': 'Web sitemiz, kullanıcı tercihlerini (örneğin karanlık mod seçimi) hatırlamak için sadece gerekli çerezleri kullanır. Bu çerezler kişisel veri içermez.',
+            'privacy.title4': '4. Üçüncü Parti Hizmetler',
+            'privacy.text4': 'MediaMagic, reklam veya analiz amaçlı herhangi bir üçüncü parti hizmet kullanmamaktadır. Tüm işlemler tamamen yerel olarak gerçekleşir.',
+            'privacy.title5': '5. Değişiklikler',
+            'privacy.text5': 'Gizlilik politikamızda yapılacak değişiklikler bu sayfada yayınlanacaktır. Son güncelleme tarihi: 25/03/2025',
+            'sections.terms': 'Kullanım Koşulları',
+            'terms.title1': '1. Hizmet Kullanımı',
+            'terms.text1': 'MediaMagic ücretsiz bir hizmettir ve kişisel kullanım için sunulmaktadır. Ticari kullanım için lütfen bizimle iletişime geçin.',
+            'terms.title2': '2. Sorumluluk',
+            'terms.text2': 'MediaMagic, dönüştürülen dosyaların içeriğinden veya kullanımından sorumlu değildir. Kullanıcılar yasalara uygun içerikler yüklemekle yükümlüdür.',
+            'terms.title3': '3. Hizmet Kesintileri',
+            'terms.text3': 'MediaMagic, bakım veya teknik sorunlar nedeniyle hizmette kesintiler yaşanabileceğini bildirir. Bu tür durumlarda önceden haber verme zorunluluğumuz yoktur.',
+            'terms.title4': '4. Fikri Mülkiyet',
+            'terms.text4': 'MediaMagic web arayüzü ve tüm içerikler RK Studio\'ya aittir. İzinsiz kopyalama, dağıtım veya kullanım yasaktır.',
+            'terms.title5': '5. Değişiklikler',
+            'terms.text5': 'Kullanım koşullarımız zaman zaman güncellenebilir. Değişiklikler yürürlüğe girdikleri tarihten itibaren geçerlidir. Son güncelleme tarihi: 25/03/2025',
+            'footer.about': 'Hakkımızda',
+            'footer.about.text': 'Profesyonel medya dönüştürme araçlarıyla işlerinizi kolaylaştırıyoruz.',
+            'footer.links': 'Hızlı Bağlantılar',
+            'footer.contact': 'İletişim',
+            'footer.support': 'Destek Talebi',
+            'footer.feedback': 'Geri Bildirim',
+            'footer.partnership': 'Ortaklık',
+            'footer.rights': '© 2025 MediaMagic. Tüm hakları saklıdır.',
+            'footer.design': 'Rıza Kaya tarafından tasarlandı ❤️',
+            'language.current': 'Türkçe',
+            'language.tr': 'Türkçe',
+            'language.en': 'İngilizce',
+            'language.de': 'Almanca',
+            'language.fr': 'Fransızca',
+            'language.es': 'İspanyolca',
+            'language.ru': 'Rusça',
+            'language.ja': 'Japonca',
+            'alert': 'Lütfen bir dosya seçin.'
+        },
+        'en': {
+            'title': 'Convert Your Image Files',
+            'subtitle': 'Easily convert between PNG, JPG, WEBP, and more formats',
+            'nav.converter': 'Converter',
+            'nav.features': 'Features',
+            'nav.faq': 'FAQ',
+            'nav.privacy': 'Privacy',
+            'nav.terms': 'Terms',
+            'converter.title': 'Image Converter',
+            'converter.text': 'Convert between PNG, JPG, WEBP, GIF, BMP, ICO, TIFF, SVG, HEIC, PDF, and more formats.',
+            'converter.targetFormat': 'Target Format',
+            'converter.orientation': 'Orientation',
+            'formats.jpg': 'JPG',
+            'formats.png': 'PNG',
+            'formats.webp': 'WEBP',
+            'formats.gif': 'GIF',
+            'formats.bmp': 'BMP',
+            'formats.ico': 'ICO',
+            'formats.tiff': 'TIFF',
+            'formats.svg': 'SVG',
+            'formats.heic': 'HEIC',
+            'formats.pdf': 'PDF',
+            'orientation.portrait': 'Portrait',
+            'orientation.landscape': 'Landscape',
+            'dropzone.prompt': 'Drag your image file here or click',
+            'button.convert': 'Convert',
+            'progress.loading': 'Loading...',
+            'progress.converting': 'Converting...',
+            'output.result': 'Result',
+            'output.fileInfo': 'File Information',
+            'output.fileName': 'File Name',
+            'output.size': 'Size',
+            'output.format': 'Format',
+            'output.dimensions': 'Dimensions',
+            'button.download': 'Download',
+            'sections.features': 'Features',
+            'features.title1': 'Multiple Format Support',
+            'features.text1': 'Easily convert between more than 10 image formats. JPG, PNG, WEBP, GIF, and more.',
+            'features.title2': 'Secure Conversion',
+            'features.text2': 'All processing happens in your browser. Your files are not uploaded to servers, your privacy is protected.',
+            'features.title3': 'Fast Processing',
+            'features.text3': 'Conversion operations are completed in seconds thanks to powerful algorithms.',
+            'features.title4': 'Mobile Friendly',
+            'features.text4': 'Works seamlessly on all devices. You can easily convert from your phone.',
+            'features.title5': 'Dark Mode',
+            'features.text5': 'Work comfortably at night with dark mode support that doesn\'t strain your eyes.',
+            'features.title6': 'Orientation Options',
+            'features.text6': 'Convert your images vertically or horizontally, choose the orientation you want.',
+            'sections.faq': 'Frequently Asked Questions',
+            'faq.question1': 'How long does the conversion process take?',
+            'faq.answer1': 'The conversion process varies depending on file size and type, but most conversions complete within seconds.',
+            'faq.question2': 'Are my files safe?',
+            'faq.answer2': 'Yes, all processing happens in your browser, and your files are not uploaded to our servers. No data is stored after the process is complete.',
+            'faq.question3': 'How many files can I convert at once?',
+            'faq.answer3': 'Currently, you can convert a single file. Batch conversion feature will be added soon.',
+            'faq.question4': 'Which browsers are supported?',
+            'faq.answer4': 'MediaMagic works seamlessly on the latest versions of Chrome, Firefox, Edge, Safari, and Opera. Internet Explorer is not supported.',
+            'faq.question5': 'What is the conversion quality like?',
+            'faq.answer5': 'We use optimized algorithms to ensure the highest quality in conversions. Quality loss is minimal, especially in JPG and PNG conversions.',
+            'sections.privacy': 'Privacy Policy',
+            'privacy.title1': '1. Privacy',
+            'privacy.text1': 'At MediaMagic, we prioritize user privacy. All conversion processes happen in your browser, and no files are uploaded to our servers.',
+            'privacy.title2': '2. Data Collection',
+            'privacy.text2': 'Our application does not collect, store, or share any personal data. We may collect anonymous usage statistics to improve the user experience.',
+            'privacy.title3': '3. Cookies',
+            'privacy.text3': 'Our website uses only necessary cookies to remember user preferences (e.g., dark mode selection). These cookies do not contain personal data.',
+            'privacy.title4': '4. Third-Party Services',
+            'privacy.text4': 'MediaMagic does not use any third-party services for advertising or analytics. All operations are performed locally.',
+            'privacy.title5': '5. Changes',
+            'privacy.text5': 'Changes to our privacy policy will be posted on this page. Last updated: 03/25/2025',
+            'sections.terms': 'Terms of Service',
+            'terms.title1': '1. Service Usage',
+            'terms.text1': 'MediaMagic is a free service offered for personal use. For commercial use, please contact us.',
+            'terms.title2': '2. Responsibility',
+            'terms.text2': 'MediaMagic is not responsible for the content or usage of converted files. Users are responsible for uploading content compliant with laws.',
+            'terms.title3': '3. Service Interruptions',
+            'terms.text3': 'MediaMagic may experience interruptions due to maintenance or technical issues. We are not obligated to provide prior notice in such cases.',
+            'terms.title4': '4. Intellectual Property',
+            'terms.text4': 'The MediaMagic web interface and all content belong to RK Studio. Unauthorized copying, distribution, or use is prohibited.',
+            'terms.title5': '5. Changes',
+            'terms.text5': 'Our terms of service may be updated from time to time. Changes take effect as of their effective date. Last updated: 03/25/2025',
+            'footer.about': 'About Us',
+            'footer.about.text': 'We simplify your tasks with professional media conversion tools.',
+            'footer.links': 'Quick Links',
+            'footer.contact': 'Contact',
+            'footer.support': 'Support Request',
+            'footer.feedback': 'Feedback',
+            'footer.partnership': 'Partnership',
+            'footer.rights': '© 2025 MediaMagic. All rights reserved.',
+            'footer.design': 'Designed by Rıza Kaya ❤️',
+            'language.current': 'English',
+            'language.tr': 'Turkish',
+            'language.en': 'English',
+            'language.de': 'German',
+            'language.fr': 'French',
+            'language.es': 'Spanish',
+            'language.ru': 'Russian',
+            'language.ja': 'Japanese',
+            'alert': 'Please select a file.'
+        },
+        'de': {
+            'title': 'Konvertieren Sie Ihre Bilddateien',
+            'subtitle': 'Einfaches Konvertieren zwischen PNG, JPG, WEBP und mehr Formaten',
+            'nav.converter': 'Konverter',
+            'nav.features': 'Funktionen',
+            'nav.faq': 'FAQ',
+            'nav.privacy': 'Datenschutz',
+            'nav.terms': 'Nutzungsbedingungen',
+            'converter.title': 'Bildkonverter',
+            'converter.text': 'Konvertieren Sie zwischen PNG, JPG, WEBP, GIF, BMP, ICO, TIFF, SVG, HEIC, PDF und mehr Formaten.',
+            'converter.targetFormat': 'Zielformat',
+            'converter.orientation': 'Ausrichtung',
+            'formats.jpg': 'JPG',
+            'formats.png': 'PNG',
+            'formats.webp': 'WEBP',
+            'formats.gif': 'GIF',
+            'formats.bmp': 'BMP',
+            'formats.ico': 'ICO',
+            'formats.tiff': 'TIFF',
+            'formats.svg': 'SVG',
+            'formats.heic': 'HEIC',
+            'formats.pdf': 'PDF',
+            'orientation.portrait': 'Hochformat',
+            'orientation.landscape': 'Querformat',
+            'dropzone.prompt': 'Ziehen Sie Ihre Bilddatei hierher oder klicken Sie',
+            'button.convert': 'Konvertieren',
+            'progress.loading': 'Wird geladen...',
+            'progress.converting': 'Wird konvertiert...',
+            'output.result': 'Ergebnis',
+            'output.fileInfo': 'Dateiinformationen',
+            'output.fileName': 'Dateiname',
+            'output.size': 'Größe',
+            'output.format': 'Format',
+            'output.dimensions': 'Abmessungen',
+            'button.download': 'Herunterladen',
+            'sections.features': 'Funktionen',
+            'features.title1': 'Mehrfachformat-Unterstützung',
+            'features.text1': 'Einfaches Konvertieren zwischen mehr als 10 Bildformaten. JPG, PNG, WEBP, GIF und mehr.',
+            'features.title2': 'Sichere Konvertierung',
+            'features.text2': 'Alle Verarbeitungen erfolgen in Ihrem Browser. Ihre Dateien werden nicht auf Server hochgeladen, Ihre Privatsphäre ist geschützt.',
+            'features.title3': 'Schnelle Verarbeitung',
+            'features.text3': 'Konvertierungsvorgänge werden dank leistungsstarker Algorithmen in Sekundenschnelle abgeschlossen.',
+            'features.title4': 'Mobilfreundlich',
+            'features.text4': 'Funktioniert nahtlos auf allen Geräten. Sie können ganz einfach von Ihrem Telefon aus konvertieren.',
+            'features.title5': 'Dunkelmodus',
+            'features.text5': 'Arbeiten Sie nachts bequem mit dem Dunkelmodus, der Ihre Augen nicht belastet.',
+            'features.title6': 'Ausrichtungsoptionen',
+            'features.text6': 'Konvertieren Sie Ihre Bilder vertikal oder horizontal, wählen Sie die gewünschte Ausrichtung.',
+            'sections.faq': 'Häufig gestellte Fragen',
+            'faq.question1': 'Wie lange dauert der Konvertierungsprozess?',
+            'faq.answer1': 'Der Konvertierungsprozess variiert je nach Dateigröße und -typ, aber die meisten Konvertierungen werden innerhalb von Sekunden abgeschlossen.',
+            'faq.question2': 'Sind meine Dateien sicher?',
+            'faq.answer2': 'Ja, alle Verarbeitungen erfolgen in Ihrem Browser, und Ihre Dateien werden nicht auf unsere Server hochgeladen. Nach Abschluss des Vorgangs werden keine Daten gespeichert.',
+            'faq.question3': 'Wie viele Dateien kann ich gleichzeitig konvertieren?',
+            'faq.answer3': 'Derzeit können Sie eine einzelne Datei konvertieren. Die Stapelkonvertierungsfunktion wird in Kürze hinzugefügt.',
+            'faq.question4': 'Welche Browser werden unterstützt?',
+            'faq.answer4': 'MediaMagic funktioniert nahtlos in den neuesten Versionen von Chrome, Firefox, Edge, Safari und Opera. Internet Explorer wird nicht unterstützt.',
+            'faq.question5': 'Wie ist die Konvertierungsqualität?',
+            'faq.answer5': 'Wir verwenden optimierte Algorithmen, um die höchste Qualität bei Konvertierungen zu gewährleisten. Qualitätsverluste sind minimal, insbesondere bei JPG- und PNG-Konvertierungen.',
+            'sections.privacy': 'Datenschutzrichtlinie',
+            'privacy.title1': '1. Datenschutz',
+            'privacy.text1': 'Bei MediaMagic priorisieren wir den Datenschutz der Benutzer. Alle Konvertierungsprozesse erfolgen in Ihrem Browser, und keine Dateien werden auf unsere Server hochgeladen.',
+            'privacy.title2': '2. Datenerfassung',
+            'privacy.text2': 'Unsere Anwendung erfasst, speichert oder teilt keine persönlichen Daten. Wir können anonyme Nutzungsstatistiken erfassen, um die Benutzererfahrung zu verbessern.',
+            'privacy.title3': '3. Cookies',
+            'privacy.text3': 'Unsere Website verwendet nur notwendige Cookies, um Benutzereinstellungen (z. B. Dunkelmodus-Auswahl) zu speichern. Diese Cookies enthalten keine persönlichen Daten.',
+            'privacy.title4': '4. Drittanbieterdienste',
+            'privacy.text4': 'MediaMagic verwendet keine Drittanbieterdienste für Werbung oder Analysen. Alle Vorgänge werden lokal durchgeführt.',
+            'privacy.title5': '5. Änderungen',
+            'privacy.text5': 'Änderungen an unserer Datenschutzrichtlinie werden auf dieser Seite veröffentlicht. Letzte Aktualisierung: 25.03.2025',
+            'sections.terms': 'Nutzungsbedingungen',
+            'terms.title1': '1. Nutzung des Dienstes',
+            'terms.text1': 'MediaMagic ist ein kostenloser Dienst für die persönliche Nutzung. Für die kommerzielle Nutzung kontaktieren Sie uns bitte.',
+            'terms.title2': '2. Verantwortung',
+            'terms.text2': 'MediaMagic ist nicht verantwortlich für den Inhalt oder die Verwendung konvertierter Dateien. Benutzer sind verpflichtet, gesetzeskonforme Inhalte hochzuladen.',
+            'terms.title3': '3. Dienstunterbrechungen',
+            'terms.text3': 'MediaMagic kann aufgrund von Wartungsarbeiten oder technischen Problemen Unterbrechungen erfahren. In solchen Fällen sind wir nicht verpflichtet, vorherige Ankündigungen zu machen.',
+            'terms.title4': '4. Geistiges Eigentum',
+            'terms.text4': 'Die MediaMagic-Weboberfläche und alle Inhalte gehören RK Studio. Unbefugtes Kopieren, Verteilen oder Verwenden ist untersagt.',
+            'terms.title5': '5. Änderungen',
+            'terms.text5': 'Unsere Nutzungsbedingungen können von Zeit zu Zeit aktualisiert werden. Änderungen treten mit ihrem Inkrafttreten in Kraft. Letzte Aktualisierung: 25.03.2025',
+            'footer.about': 'Über uns',
+            'footer.about.text': 'Wir vereinfachen Ihre Aufgaben mit professionellen Medienkonvertierungstools.',
+            'footer.links': 'Schnelllinks',
+            'footer.contact': 'Kontakt',
+            'footer.support': 'Supportanfrage',
+            'footer.feedback': 'Feedback',
+            'footer.partnership': 'Partnerschaft',
+            'footer.rights': '© 2025 MediaMagic. Alle Rechte vorbehalten.',
+            'footer.design': 'Entworfen von Rıza Kaya ❤️',
+            'language.current': 'Deutsch',
+            'language.tr': 'Türkisch',
+            'language.en': 'Englisch',
+            'language.de': 'Deutsch',
+            'language.fr': 'Französisch',
+            'language.es': 'Spanisch',
+            'language.ru': 'Russisch',
+            'language.ja': 'Japanisch',
+            'alert': 'Bitte wählen Sie eine Datei aus.'
+        },
+        'fr': {
+            'title': 'Convertissez vos fichiers image',
+            'subtitle': 'Conversion facile entre PNG, JPG, WEBP et plus de formats',
+            'nav.converter': 'Convertisseur',
+            'nav.features': 'Fonctionnalités',
+            'nav.faq': 'FAQ',
+            'nav.privacy': 'Confidentialité',
+            'nav.terms': 'Conditions',
+            'converter.title': 'Convertisseur d\'image',
+            'converter.text': 'Convertir entre PNG, JPG, WEBP, GIF, BMP, ICO, TIFF, SVG, HEIC, PDF et plus de formats.',
+            'converter.targetFormat': 'Format cible',
+            'converter.orientation': 'Orientation',
+            'formats.jpg': 'JPG',
+            'formats.png': 'PNG',
+            'formats.webp': 'WEBP',
+            'formats.gif': 'GIF',
+            'formats.bmp': 'BMP',
+            'formats.ico': 'ICO',
+            'formats.tiff': 'TIFF',
+            'formats.svg': 'SVG',
+            'formats.heic': 'HEIC',
+            'formats.pdf': 'PDF',
+            'orientation.portrait': 'Portrait',
+            'orientation.landscape': 'Paysage',
+            'dropzone.prompt': 'Glissez votre fichier image ici ou cliquez',
+            'button.convert': 'Convertir',
+            'progress.loading': 'Chargement...',
+            'progress.converting': 'Conversion...',
+            'output.result': 'Résultat',
+            'output.fileInfo': 'Informations sur le fichier',
+            'output.fileName': 'Nom du fichier',
+            'output.size': 'Taille',
+            'output.format': 'Format',
+            'output.dimensions': 'Dimensions',
+            'button.download': 'Télécharger',
+            'sections.features': 'Fonctionnalités',
+            'features.title1': 'Prise en charge de plusieurs formats',
+            'features.text1': 'Conversion facile entre plus de 10 formats d\'image. JPG, PNG, WEBP, GIF et plus.',
+            'features.title2': 'Conversion sécurisée',
+            'features.text2': 'Tout le traitement se fait dans votre navigateur. Vos fichiers ne sont pas téléchargés sur des serveurs, votre vie privée est protégée.',
+            'features.title3': 'Traitement rapide',
+            'features.text3': 'Les opérations de conversion sont terminées en quelques secondes grâce à des algorithmes puissants.',
+            'features.title4': 'Adapté aux mobiles',
+            'features.text4': 'Fonctionne parfaitement sur tous les appareils. Vous pouvez facilement convertir depuis votre téléphone.',
+            'features.title5': 'Mode sombre',
+            'features.text5': 'Travaillez confortablement la nuit avec le mode sombre qui ne fatigue pas vos yeux.',
+            'features.title6': 'Options d\'orientation',
+            'features.text6': 'Convertissez vos images verticalement ou horizontalement, choisissez l\'orientation que vous souhaitez.',
+            'sections.faq': 'Questions fréquemment posées',
+            'faq.question1': 'Combien de temps prend le processus de conversion?',
+            'faq.answer1': 'Le processus de conversion varie selon la taille et le type de fichier, mais la plupart des conversions se terminent en quelques secondes.',
+            'faq.question2': 'Mes fichiers sont-ils en sécurité?',
+            'faq.answer2': 'Oui, tout le traitement se fait dans votre navigateur et vos fichiers ne sont pas téléchargés sur nos serveurs. Aucune donnée n\'est stockée après la fin du processus.',
+            'faq.question3': 'Combien de fichiers puis-je convertir à la fois?',
+            'faq.answer3': 'Actuellement, vous pouvez convertir un seul fichier. La fonction de conversion par lots sera ajoutée prochainement.',
+            'faq.question4': 'Quels navigateurs sont pris en charge?',
+            'faq.answer4': 'MediaMagic fonctionne parfaitement sur les dernières versions de Chrome, Firefox, Edge, Safari et Opera. Internet Explorer n\'est pas pris en charge.',
+            'faq.question5': 'Quelle est la qualité de conversion?',
+            'faq.answer5': 'Nous utilisons des algorithmes optimisés pour garantir la meilleure qualité de conversion. La perte de qualité est minime, en particulier pour les conversions JPG et PNG.',
+            'sections.privacy': 'Politique de confidentialité',
+            'privacy.title1': '1. Confidentialité',
+            'privacy.text1': 'Chez MediaMagic, nous donnons la priorité à la confidentialité des utilisateurs. Tous les processus de conversion ont lieu dans votre navigateur et aucun fichier n\'est téléchargé sur nos serveurs.',
+            'privacy.title2': '2. Collecte de données',
+            'privacy.text2': 'Notre application ne collecte, ne stocke ni ne partage aucune donnée personnelle. Nous pouvons collecter des statistiques d\'utilisation anonymes pour améliorer l\'expérience utilisateur.',
+            'privacy.title3': '3. Cookies',
+            'privacy.text3': 'Notre site Web n\'utilise que les cookies nécessaires pour mémoriser les préférences des utilisateurs (par exemple, la sélection du mode sombre). Ces cookies ne contiennent pas de données personnelles.',
+            'privacy.title4': '4. Services tiers',
+            'privacy.text4': 'MediaMagic n\'utilise aucun service tiers pour la publicité ou l\'analyse. Toutes les opérations sont effectuées localement.',
+            'privacy.title5': '5. Changements',
+            'privacy.text5': 'Les modifications apportées à notre politique de confidentialité seront publiées sur cette page. Dernière mise à jour: 25/03/2025',
+            'sections.terms': 'Conditions d\'utilisation',
+            'terms.title1': '1. Utilisation du service',
+            'terms.text1': 'MediaMagic est un service gratuit offert pour un usage personnel. Pour un usage commercial, veuillez nous contacter.',
+            'terms.title2': '2. Responsabilité',
+            'terms.text2': 'MediaMagic n\'est pas responsable du contenu ou de l\'utilisation des fichiers convertis. Les utilisateurs sont responsables du téléchargement de contenus conformes à la loi.',
+            'terms.title3': '3. Interruptions de service',
+            'terms.text3': 'MediaMagic peut connaître des interruptions en raison de problèmes de maintenance ou techniques. Nous ne sommes pas obligés de fournir un préavis dans de tels cas.',
+            'terms.title4': '4. Propriété intellectuelle',
+            'terms.text4': 'L\'interface Web MediaMagic et tout le contenu appartiennent à RK Studio. La copie, la distribution ou l\'utilisation non autorisées sont interdites.',
+            'terms.title5': '5. Changements',
+            'terms.text5': 'Nos conditions d\'utilisation peuvent être mises à jour de temps à autre. Les modifications prennent effet à leur date d\'entrée en vigueur. Dernière mise à jour: 25/03/2025',
+            'footer.about': 'À propos de nous',
+            'footer.about.text': 'Nous simplifions vos tâches avec des outils professionnels de conversion multimédia.',
+            'footer.links': 'Liens rapides',
+            'footer.contact': 'Contact',
+            'footer.support': 'Demande de support',
+            'footer.feedback': 'Retour',
+            'footer.partnership': 'Partenariat',
+            'footer.rights': '© 2025 MediaMagic. Tous droits réservés.',
+            'footer.design': 'Conçu par Rıza Kaya ❤️',
+            'language.current': 'Français',
+            'language.tr': 'Turc',
+            'language.en': 'Anglais',
+            'language.de': 'Allemand',
+            'language.fr': 'Français',
+            'language.es': 'Espagnol',
+            'language.ru': 'Russe',
+            'language.ja': 'Japonais',
+            'alert': 'Veuillez sélectionner un fichier.'
+        },
+        'es': {
+            'title': 'Convierte tus archivos de imagen',
+            'subtitle': 'Conversión fácil entre PNG, JPG, WEBP y más formatos',
+            'nav.converter': 'Conversor',
+            'nav.features': 'Características',
+            'nav.faq': 'Preguntas frecuentes',
+            'nav.privacy': 'Privacidad',
+            'nav.terms': 'Términos',
+            'converter.title': 'Conversor de imágenes',
+            'converter.text': 'Convierte entre PNG, JPG, WEBP, GIF, BMP, ICO, TIFF, SVG, HEIC, PDF y más formatos.',
+            'converter.targetFormat': 'Formato de destino',
+            'converter.orientation': 'Orientación',
+            'formats.jpg': 'JPG',
+            'formats.png': 'PNG',
+            'formats.webp': 'WEBP',
+            'formats.gif': 'GIF',
+            'formats.bmp': 'BMP',
+            'formats.ico': 'ICO',
+            'formats.tiff': 'TIFF',
+            'formats.svg': 'SVG',
+            'formats.heic': 'HEIC',
+            'formats.pdf': 'PDF',
+            'orientation.portrait': 'Vertical',
+            'orientation.landscape': 'Horizontal',
+            'dropzone.prompt': 'Arrastra tu archivo de imagen aquí o haz clic',
+            'button.convert': 'Convertir',
+            'progress.loading': 'Cargando...',
+            'progress.converting': 'Convirtiendo...',
+            'output.result': 'Resultado',
+            'output.fileInfo': 'Información del archivo',
+            'output.fileName': 'Nombre del archivo',
+            'output.size': 'Tamaño',
+            'output.format': 'Formato',
+            'output.dimensions': 'Dimensiones',
+            'button.download': 'Descargar',
+            'sections.features': 'Características',
+            'features.title1': 'Soporte para múltiples formatos',
+            'features.text1': 'Conversión fácil entre más de 10 formatos de imagen. JPG, PNG, WEBP, GIF y más.',
+            'features.title2': 'Conversión segura',
+            'features.text2': 'Todo el procesamiento ocurre en tu navegador. Tus archivos no se suben a servidores, tu privacidad está protegida.',
+            'features.title3': 'Procesamiento rápido',
+            'features.text3': 'Las operaciones de conversión se completan en segundos gracias a potentes algoritmos.',
+            'features.title4': 'Compatible con móviles',
+            'features.text4': 'Funciona perfectamente en todos los dispositivos. Puedes convertir fácilmente desde tu teléfono.',
+            'features.title5': 'Modo oscuro',
+            'features.text5': 'Trabaja cómodamente por la noche con el modo oscuro que no fatiga tus ojos.',
+            'features.title6': 'Opciones de orientación',
+            'features.text6': 'Convierte tus imágenes vertical u horizontalmente, elige la orientación que desees.',
+            'sections.faq': 'Preguntas frecuentes',
+            'faq.question1': '¿Cuánto tiempo tarda el proceso de conversión?',
+            'faq.answer1': 'El proceso de conversión varía según el tamaño y tipo de archivo, pero la mayoría de las conversiones se completan en segundos.',
+            'faq.question2': '¿Mis archivos están seguros?',
+            'faq.answer2': 'Sí, todo el procesamiento ocurre en tu navegador y tus archivos no se suben a nuestros servidores. No se almacenan datos después de completar el proceso.',
+            'faq.question3': '¿Cuántos archivos puedo convertir a la vez?',
+            'faq.answer3': 'Actualmente, puedes convertir un solo archivo. Próximamente se añadirá la función de conversión por lotes.',
+            'faq.question4': '¿Qué navegadores son compatibles?',
+            'faq.answer4': 'MediaMagic funciona perfectamente en las últimas versiones de Chrome, Firefox, Edge, Safari y Opera. Internet Explorer no es compatible.',
+            'faq.question5': '¿Cómo es la calidad de conversión?',
+            'faq.answer5': 'Usamos algoritmos optimizados para garantizar la más alta calidad en conversiones. La pérdida de calidad es mínima, especialmente en conversiones JPG y PNG.',
+            'sections.privacy': 'Política de privacidad',
+            'privacy.title1': '1. Privacidad',
+            'privacy.text1': 'En MediaMagic, priorizamos la privacidad del usuario. Todos los procesos de conversión ocurren en tu navegador y ningún archivo se sube a nuestros servidores.',
+            'privacy.title2': '2. Recopilación de datos',
+            'privacy.text2': 'Nuestra aplicación no recopila, almacena ni comparte datos personales. Podemos recopilar estadísticas de uso anónimas para mejorar la experiencia del usuario.',
+            'privacy.title3': '3. Cookies',
+            'privacy.text3': 'Nuestro sitio web solo usa cookies necesarias para recordar preferencias de usuario (ej. selección de modo oscuro). Estas cookies no contienen datos personales.',
+            'privacy.title4': '4. Servicios de terceros',
+            'privacy.text4': 'MediaMagic no utiliza servicios de terceros para publicidad o análisis. Todas las operaciones se realizan localmente.',
+            'privacy.title5': '5. Cambios',
+            'privacy.text5': 'Los cambios en nuestra política de privacidad se publicarán en esta página. Última actualización: 25/03/2025',
+            'sections.terms': 'Términos de servicio',
+            'terms.title1': '1. Uso del servicio',
+            'terms.text1': 'MediaMagic es un servicio gratuito para uso personal. Para uso comercial, por favor contáctenos.',
+            'terms.title2': '2. Responsabilidad',
+            'terms.text2': 'MediaMagic no es responsable del contenido o uso de archivos convertidos. Los usuarios son responsables de subir contenido que cumpla con la ley.',
+            'terms.title3': '3. Interrupciones del servicio',
+            'terms.text3': 'MediaMagic puede experimentar interrupciones por mantenimiento o problemas técnicos. No estamos obligados a dar aviso previo en tales casos.',
+            'terms.title4': '4. Propiedad intelectual',
+            'terms.text4': 'La interfaz web de MediaMagic y todo el contenido pertenecen a RK Studio. Se prohíbe la copia, distribución o uso no autorizados.',
+            'terms.title5': '5. Cambios',
+            'terms.text5': 'Nuestros términos de servicio pueden actualizarse ocasionalmente. Los cambios entran en vigor en su fecha de vigencia. Última actualización: 25/03/2025',
+            'footer.about': 'Sobre nosotros',
+            'footer.about.text': 'Simplificamos tus tareas con herramientas profesionales de conversión multimedia.',
+            'footer.links': 'Enlaces rápidos',
+            'footer.contact': 'Contacto',
+            'footer.support': 'Solicitud de soporte',
+            'footer.feedback': 'Comentarios',
+            'footer.partnership': 'Asociación',
+            'footer.rights': '© 2025 MediaMagic. Todos los derechos reservados.',
+            'footer.design': 'Diseñado por Rıza Kaya ❤️',
+            'language.current': 'Español',
+            'language.tr': 'Turco',
+            'language.en': 'Inglés',
+            'language.de': 'Alemán',
+            'language.fr': 'Francés',
+            'language.es': 'Español',
+            'language.ru': 'Ruso',
+            'language.ja': 'Japonés',
+            'alert': 'Por favor selecciona un archivo.'
+        },
+        'ru': {
+            'title': 'Конвертируйте ваши изображения',
+            'subtitle': 'Легкое преобразование между PNG, JPG, WEBP и другими форматами',
+            'nav.converter': 'Конвертер',
+            'nav.features': 'Функции',
+            'nav.faq': 'ЧаВо',
+            'nav.privacy': 'Конфиденциальность',
+            'nav.terms': 'Условия',
+            'converter.title': 'Конвертер изображений',
+            'converter.text': 'Конвертируйте между PNG, JPG, WEBP, GIF, BMP, ICO, TIFF, SVG, HEIC, PDF и другими форматами.',
+            'converter.targetFormat': 'Целевой формат',
+            'converter.orientation': 'Ориентация',
+            'formats.jpg': 'JPG',
+            'formats.png': 'PNG',
+            'formats.webp': 'WEBP',
+            'formats.gif': 'GIF',
+            'formats.bmp': 'BMP',
+            'formats.ico': 'ICO',
+            'formats.tiff': 'TIFF',
+            'formats.svg': 'SVG',
+            'formats.heic': 'HEIC',
+            'formats.pdf': 'PDF',
+            'orientation.portrait': 'Портретная',
+            'orientation.landscape': 'Альбомная',
+            'dropzone.prompt': 'Перетащите файл изображения сюда или нажмите',
+            'button.convert': 'Конвертировать',
+            'progress.loading': 'Загрузка...',
+            'progress.converting': 'Конвертация...',
+            'output.result': 'Результат',
+            'output.fileInfo': 'Информация о файле',
+            'output.fileName': 'Имя файла',
+            'output.size': 'Размер',
+            'output.format': 'Формат',
+            'output.dimensions': 'Размеры',
+            'button.download': 'Скачать',
+            'sections.features': 'Функции',
+            'features.title1': 'Поддержка множества форматов',
+            'features.text1': 'Легкое преобразование между более чем 10 форматами изображений. JPG, PNG, WEBP, GIF и другие.',
+            'features.title2': 'Безопасная конвертация',
+            'features.text2': 'Вся обработка происходит в вашем браузере. Ваши файлы не загружаются на серверы, ваша конфиденциальность защищена.',
+            'features.title3': 'Быстрая обработка',
+            'features.text3': 'Операции конвертации завершаются за секунды благодаря мощным алгоритмам.',
+            'features.title4': 'Мобильная совместимость',
+            'features.text4': 'Работает на всех устройствах. Вы можете легко конвертировать с вашего телефона.',
+            'features.title5': 'Темный режим',
+            'features.text5': 'Работайте комфортно ночью с темным режимом, который не утомляет глаза.',
+            'features.title6': 'Опции ориентации',
+            'features.text6': 'Конвертируйте ваши изображения вертикально или горизонтально, выберите нужную ориентацию.',
+            'sections.faq': 'Часто задаваемые вопросы',
+            'faq.question1': 'Сколько времени занимает процесс конвертации?',
+            'faq.answer1': 'Процесс конвертации зависит от размера и типа файла, но большинство преобразований завершаются за секунды.',
+            'faq.question2': 'Мои файлы в безопасности?',
+            'faq.answer2': 'Да, вся обработка происходит в вашем браузере, и ваши файлы не загружаются на наши серверы. После завершения процесса данные не сохраняются.',
+            'faq.question3': 'Сколько файлов я могу конвертировать одновременно?',
+            'faq.answer3': 'В настоящее время вы можете конвертировать один файл. Скоро будет добавлена функция пакетного преобразования.',
+            'faq.question4': 'Какие браузеры поддерживаются?',
+            'faq.answer4': 'MediaMagic работает в последних версиях Chrome, Firefox, Edge, Safari и Opera. Internet Explorer не поддерживается.',
+            'faq.question5': 'Какое качество конвертации?',
+            'faq.answer5': 'Мы используем оптимизированные алгоритмы для обеспечения наивысшего качества конвертации. Потери качества минимальны, особенно для JPG и PNG.',
+            'sections.privacy': 'Политика конфиденциальности',
+            'privacy.title1': '1. Конфиденциальность',
+            'privacy.text1': 'В MediaMagic мы уделяем большое внимание конфиденциальности пользователей. Все процессы конвертации происходят в вашем браузере, и файлы не загружаются на наши серверы.',
+            'privacy.title2': '2. Сбор данных',
+            'privacy.text2': 'Наше приложение не собирает, не хранит и не передает личные данные. Мы можем собирать анонимную статистику использования для улучшения пользовательского опыта.',
+            'privacy.title3': '3. Куки',
+            'privacy.text3': 'Наш сайт использует только необходимые куки для запоминания пользовательских предпочтений (например, выбор темного режима). Эти куки не содержат личных данных.',
+            'privacy.title4': '4. Сторонние сервисы',
+            'privacy.text4': 'MediaMagic не использует сторонние сервисы для рекламы или аналитики. Все операции выполняются локально.',
+            'privacy.title5': '5. Изменения',
+            'privacy.text5': 'Изменения в нашей политике конфиденциальности будут опубликованы на этой странице. Последнее обновление: 25.03.2025',
+            'sections.terms': 'Условия использования',
+            'terms.title1': '1. Использование сервиса',
+            'terms.text1': 'MediaMagic - это бесплатный сервис для личного использования. Для коммерческого использования, пожалуйста, свяжитесь с нами.',
+            'terms.title2': '2. Ответственность',
+            'terms.text2': 'MediaMagic не несет ответственности за содержание или использование конвертированных файлов. Пользователи обязаны загружать контент, соответствующий закону.',
+            'terms.title3': '3. Перебои в работе',
+            'terms.text3': 'MediaMagic может испытывать перебои в работе из-за технического обслуживания или проблем. Мы не обязаны уведомлять заранее в таких случаях.',
+            'terms.title4': '4. Интеллектуальная собственность',
+            'terms.text4': 'Веб-интерфейс MediaMagic и весь контент принадлежат RK Studio. Несанкционированное копирование, распространение или использование запрещено.',
+            'terms.title5': '5. Изменения',
+            'terms.text5': 'Наши условия использования могут обновляться время от времени. Изменения вступают в силу с даты их вступления. Последнее обновление: 25.03.2025',
+            'footer.about': 'О нас',
+            'footer.about.text': 'Мы упрощаем ваши задачи с профессиональными инструментами конвертации медиа.',
+            'footer.links': 'Быстрые ссылки',
+            'footer.contact': 'Контакты',
+            'footer.support': 'Запрос поддержки',
+            'footer.feedback': 'Обратная связь',
+            'footer.partnership': 'Партнерство',
+            'footer.rights': '© 2025 MediaMagic. Все права защищены.',
+            'footer.design': 'Разработано Rıza Kaya ❤️',
+            'language.current': 'Русский',
+            'language.tr': 'Турецкий',
+            'language.en': 'Английский',
+            'language.de': 'Немецкий',
+            'language.fr': 'Французский',
+            'language.es': 'Испанский',
+            'language.ru': 'Русский',
+            'language.ja': 'Японский',
+            'alert': 'Пожалуйста, выберите файл.'
+        },
+        'ja': {
+            'title': '画像ファイルを変換',
+            'subtitle': 'PNG、JPG、WEBPなどの形式間で簡単に変換',
+            'nav.converter': 'コンバーター',
+            'nav.features': '機能',
+            'nav.faq': 'よくある質問',
+            'nav.privacy': 'プライバシー',
+            'nav.terms': '利用規約',
+            'converter.title': '画像コンバーター',
+            'converter.text': 'PNG、JPG、WEBP、GIF、BMP、ICO、TIFF、SVG、HEIC、PDFなどの形式間で変換できます。',
+            'converter.targetFormat': 'ターゲット形式',
+            'converter.orientation': '向き',
+            'formats.jpg': 'JPG',
+            'formats.png': 'PNG',
+            'formats.webp': 'WEBP',
+            'formats.gif': 'GIF',
+            'formats.bmp': 'BMP',
+            'formats.ico': 'ICO',
+            'formats.tiff': 'TIFF',
+            'formats.svg': 'SVG',
+            'formats.heic': 'HEIC',
+            'formats.pdf': 'PDF',
+            'orientation.portrait': '縦',
+            'orientation.landscape': '横',
+            'dropzone.prompt': '画像ファイルをここにドラッグするかクリックしてください',
+            'button.convert': '変換',
+            'progress.loading': '読み込み中...',
+            'progress.converting': '変換中...',
+            'output.result': '結果',
+            'output.fileInfo': 'ファイル情報',
+            'output.fileName': 'ファイル名',
+            'output.size': 'サイズ',
+            'output.format': '形式',
+            'output.dimensions': '寸法',
+            'button.download': 'ダウンロード',
+            'sections.features': '機能',
+            'features.title1': '複数形式サポート',
+            'features.text1': '10以上の画像形式間で簡単に変換できます。JPG、PNG、WEBP、GIFなど。',
+            'features.title2': '安全な変換',
+            'features.text2': 'すべての処理はブラウザ内で行われます。ファイルはサーバーにアップロードされず、プライバシーが保護されます。',
+            'features.title3': '高速処理',
+            'features.text3': '強力なアルゴリズムにより、変換操作は数秒で完了します。',
+            'features.title4': 'モバイル対応',
+            'features.text4': 'すべてのデバイスでシームレスに動作します。スマートフォンからも簡単に変換できます。',
+            'features.title5': 'ダークモード',
+            'features.text5': '目に優しいダークモードで夜間も快適に作業できます。',
+            'features.title6': '向きオプション',
+            'features.text6': '画像を縦または横に変換し、希望の向きを選択できます。',
+            'sections.faq': 'よくある質問',
+            'faq.question1': '変換プロセスにはどれくらい時間がかかりますか？',
+            'faq.answer1': '変換プロセスはファイルサイズとタイプによって異なりますが、ほとんどの変換は数秒で完了します。',
+            'faq.question2': '私のファイルは安全ですか？',
+            'faq.answer2': 'はい、すべての処理はブラウザ内で行われ、ファイルはサーバーにアップロードされません。処理完了後、データは保存されません。',
+            'faq.question3': '一度に何ファイル変換できますか？',
+            'faq.answer3': '現在は1ファイルずつ変換できます。バッチ変換機能は近日追加予定です。',
+            'faq.question4': 'どのブラウザがサポートされていますか？',
+            'faq.answer4': 'MediaMagicはChrome、Firefox、Edge、Safari、Operaの最新バージョンで動作します。Internet Explorerはサポートされていません。',
+            'faq.question5': '変換品質はどうですか？',
+            'faq.answer5': '最高品質の変換を保証するために最適化されたアルゴリズムを使用しています。特にJPGとPNG変換での品質劣化は最小限です。',
+            'sections.privacy': 'プライバシーポリシー',
+            'privacy.title1': '1. プライバシー',
+            'privacy.text1': 'MediaMagicではユーザーのプライバシーを最優先します。すべての変換処理はブラウザ内で行われ、ファイルはサーバーにアップロードされません。',
+            'privacy.title2': '2. データ収集',
+            'privacy.text2': '当社のアプリケーションは個人データを収集、保存、共有しません。ユーザー体験向上のために匿名の利用統計を収集する場合があります。',
+            'privacy.title3': '3. クッキー',
+            'privacy.text3': '当社のウェブサイトは、ユーザー設定（例：ダークモード選択）を記憶するために必要なクッキーのみを使用します。これらのクッキーに個人データは含まれません。',
+            'privacy.title4': '4. 第三者サービス',
+            'privacy.text4': 'MediaMagicは広告や分析のために第三者サービスを使用していません。すべての操作はローカルで行われます。',
+            'privacy.title5': '5. 変更',
+            'privacy.text5': 'プライバシーポリシーの変更はこのページに掲載されます。最終更新日: 2025年3月25日',
+            'sections.terms': '利用規約',
+            'terms.title1': '1. サービスの利用',
+            'terms.text1': 'MediaMagicは個人利用向けの無料サービスです。商用利用の場合はお問い合わせください。',
+            'terms.title2': '2. 責任',
+            'terms.text2': 'MediaMagicは変換されたファイルの内容や使用について責任を負いません。ユーザーは法律に準拠したコンテンツをアップロードする責任があります。',
+            'terms.title3': '3. サービスの中断',
+            'terms.text3': 'MediaMagicはメンテナンスや技術的問題により中断する可能性があります。そのような場合、事前通知の義務はありません。',
+            'terms.title4': '4. 知的財産',
+            'terms.text4': 'MediaMagicのウェブインターフェースとすべてのコンテンツはRK Studioに帰属します。無断での複製、配布、使用は禁止されています。',
+            'terms.title5': '5. 変更',
+            'terms.text5': '利用規約は随時更新される場合があります。変更は発効日から有効となります。最終更新日: 2025年3月25日',
+            'footer.about': '私たちについて',
+            'footer.about.text': 'プロフェッショナルなメディア変換ツールで作業を簡素化します。',
+            'footer.links': 'クイックリンク',
+            'footer.contact': 'お問い合わせ',
+            'footer.support': 'サポート依頼',
+            'footer.feedback': 'フィードバック',
+            'footer.partnership': 'パートナーシップ',
+            'footer.rights': '© 2025 MediaMagic. 全著作権所有.',
+            'footer.design': 'Rıza Kaya デザイン ❤️',
+            'language.current': '日本語',
+            'language.tr': 'トルコ語',
+            'language.en': '英語',
+            'language.de': 'ドイツ語',
+            'language.fr': 'フランス語',
+            'language.es': 'スペイン語',
+            'language.ru': 'ロシア語',
+            'language.ja': '日本語',
+            'alert': 'ファイルを選択してください。'
+        }
+    };
+
+    // Dil Değiştirme Fonksiyonu
+    let currentLang = 'tr';
+    function updateLanguage(lang) {
+        currentLang = lang;
+        document.querySelectorAll('[data-translate]').forEach(element => {
+            const key = element.getAttribute('data-translate');
+            if (translations[lang] && translations[lang][key]) {
+                element.textContent = translations[lang][key];
+            }
+        });
+        document.querySelector('.language-btn span').textContent = translations[lang]['language.current'];
+        document.querySelector('.language-btn i').className = `flag-icon flag-icon-${lang === 'en' ? 'us' : lang}`;
+        localStorage.setItem('language', lang);
+    }
+
+    // Dil Seçici
+    const languageBtn = document.querySelector('.language-btn');
+    const languageDropdown = document.querySelector('.language-dropdown');
+    const languageOptions = document.querySelectorAll('.language-option');
+
+    languageBtn.addEventListener('click', () => {
+        languageDropdown.classList.toggle('show');
+    });
+
+    languageOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            const lang = option.getAttribute('data-lang');
+            updateLanguage(lang);
+            languageDropdown.classList.remove('show');
+        });
+    });
+
+    // Tıklama dışında dil menüsünü kapatma
+    document.addEventListener('click', (e) => {
+        if (!languageBtn.contains(e.target) && !languageDropdown.contains(e.target)) {
+            languageDropdown.classList.remove('show');
+        }
+    });
+
+    // Load language preference
+    const savedLang = localStorage.getItem('language') || 'tr';
+    updateLanguage(savedLang);
+
+    // Navbar Scroll Effect
+    const navbar = document.querySelector('.navbar');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Section Animation on Scroll
+    const sections = document.querySelectorAll('section');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('show');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+
+    // Feature Card Animation Delay
+    const featureCards = document.querySelectorAll('.feature-card');
+    featureCards.forEach((card, index) => {
+        card.style.transitionDelay = `${index * 0.1}s`;
+    });
+
+    // Drop Zone Functionality
+    const dropZone = document.getElementById('imageDropZone');
+    const dropZoneInput = dropZone.querySelector('.drop-zone__input');
+    const dropZoneThumb = dropZone.querySelector('.drop-zone__thumb');
+    const progressBar = document.getElementById('imageProgress');
+    const progressText = progressBar.querySelector('.progress-text');
+    const progressBarFill = progressBar.querySelector('.progress-bar');
+    const convertBtn = document.getElementById('convertImageBtn');
+    const outputSection = document.getElementById('imageOutputSection');
+    const outputPreview = document.getElementById('imageOutputPreview');
+    const downloadBtn = document.getElementById('downloadImageBtn');
+    let selectedFile = null;
+    let outputBlob = null;
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.add('drop-zone--over'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.remove('drop-zone--over'), false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        selectedFile = e.dataTransfer.files[0];
+        handleFile(selectedFile);
+    });
+
+    dropZone.addEventListener('click', () => {
+        dropZoneInput.click();
+    });
+
+    dropZoneInput.addEventListener('change', (e) => {
+        if (e.target.files.length) {
+            selectedFile = e.target.files[0];
+            handleFile(selectedFile);
+        }
+    });
+
+    function handleFile(file) {
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                dropZoneThumb.style.backgroundImage = `url(${reader.result})`;
+                dropZoneThumb.classList.add('show');
+                progressBar.style.display = 'block';
+                simulateProgress(0, 100, 1000, () => {
+                    progressBar.style.display = 'none';
+                    dropZoneThumb.setAttribute('data-label', file.name);
+                });
+            };
+            reader.readAsDataURL(file);
+        } else {
+            alert(translations[currentLang]['alert']);
+        }
+    }
+
+    function simulateProgress(start, end, duration, callback) {
+        let progress = start;
+        const increment = (end - start) / (duration / 50);
+        progressText.textContent = translations[currentLang]['progress.loading'];
+        const interval = setInterval(() => {
+            progress += increment;
+            progressBarFill.style.width = `${progress}%`;
+            if (progress >= end) {
+                clearInterval(interval);
+                callback();
+            }
+        }, 50);
+    }
+
+    // Format Selection
+    const formatOptions = document.querySelectorAll('.format-option');
+    let selectedFormat = 'jpg';
+
+    formatOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            formatOptions.forEach(opt => opt.classList.remove('active'));
+            option.classList.add('active');
+            selectedFormat = option.getAttribute('data-format');
+        });
+    });
+
+    // Orientation Selection
+    const orientationOptions = document.querySelectorAll('.orientation-option');
+    let selectedOrientation = 'portrait';
+
+    orientationOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            orientationOptions.forEach(opt => opt.classList.remove('active'));
+            option.classList.add('active');
+            selectedOrientation = option.getAttribute('data-orientation');
+        });
+    });
+
+    // Convert Image
+    convertBtn.addEventListener('click', () => {
+        if (!selectedFile) {
+            alert(translations[currentLang]['alert']);
+            return;
+        }
+
+        progressBar.style.display = 'block';
+        progressText.textContent = translations[currentLang]['progress.converting'];
+        
+        simulateProgress(0, 100, 2000, () => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                if (selectedOrientation === 'portrait') {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                } else {
+                    canvas.width = img.height;
+                    canvas.height = img.width;
+                    ctx.translate(img.height, 0);
+                    ctx.rotate(Math.PI / 2);
+                }
+
+                ctx.drawImage(img, 0, 0);
+
+                let mimeType;
+                switch(selectedFormat) {
+                    case 'jpg': mimeType = 'image/jpeg'; break;
+                    case 'png': mimeType = 'image/png'; break;
+                    case 'webp': mimeType = 'image/webp'; break;
+                    case 'gif': mimeType = 'image/gif'; break;
+                    case 'bmp': mimeType = 'image/bmp'; break;
+                    case 'ico': mimeType = 'image/x-icon'; break;
+                    case 'tiff': mimeType = 'image/tiff'; break;
+                    case 'svg': mimeType = 'image/svg+xml'; break;
+                    case 'heic': mimeType = 'image/heic'; break;
+                    default: mimeType = 'image/jpeg';
+                }
+
+                if (selectedFormat === 'pdf') {
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF({
+                        orientation: selectedOrientation === 'portrait' ? 'p' : 'l',
+                        unit: 'px',
+                        format: [canvas.width, canvas.height]
+                    });
+                    pdf.addImage(canvas.toDataURL('image/jpeg'), 'JPEG', 0, 0, canvas.width, canvas.height);
+                    outputBlob = new Blob([pdf.output('blob')], { type: 'application/pdf' });
+                    outputPreview.src = URL.createObjectURL(outputBlob);
+                } else {
+                    canvas.toBlob(blob => {
+                        outputBlob = blob;
+                        outputPreview.src = URL.createObjectURL(blob);
+                    }, mimeType, 0.9);
+                }
+
+                outputSection.style.display = 'block';
+                progressBar.style.display = 'none';
+
+                // File Info
+                document.getElementById('imageOutputName').textContent = selectedFile.name.split('.')[0] + '.' + selectedFormat;
+                document.getElementById('imageOutputSize').textContent = `${(selectedFile.size / 1024).toFixed(2)} KB`;
+                document.getElementById('imageOutputFormat').textContent = selectedFormat.toUpperCase();
+                document.getElementById('imageOutputDimensions').textContent = `${canvas.width} x ${canvas.height} px`;
+            };
+            img.src = URL.createObjectURL(selectedFile);
+        });
+    });
+
+    // Download Converted Image
+    downloadBtn.addEventListener('click', () => {
+        if (outputBlob) {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(outputBlob);
+            link.download = `${selectedFile.name.split('.')[0]}_converted.${selectedFormat}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Clean up
+            setTimeout(() => {
+                URL.revokeObjectURL(link.href);
+            }, 100);
+        }
+    });
+
+    // Particle Effect
+    function createParticle(x, y) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        particle.style.width = `${Math.random() * 10 + 5}px`;
+        particle.style.height = particle.style.width;
+        particle.style.animation = `float ${Math.random() * 3 + 2}s infinite`;
+        document.body.appendChild(particle);
+        
+        setTimeout(() => {
+            particle.remove();
+        }, 5000);
+    }
+
+    document.addEventListener('mousemove', (e) => {
+        if (Math.random() > 0.9) {
+            createParticle(e.clientX, e.clientY);
+        }
+    });
+
+    // Animation on Scroll for Feature Cards
+    const animatedElements = document.querySelectorAll('[data-animate]');
+    const animateObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const animation = entry.target.getAttribute('data-animate');
+                const delay = entry.target.getAttribute('data-animate-delay') || '0s';
+                entry.target.style.animationDelay = delay;
+                entry.target.classList.add('animate__animated', animation);
+                animateObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.2 });
+
+    animatedElements.forEach(element => {
+        animateObserver.observe(element);
+    });
+});
+        </script>
+    </body>
+</html>
